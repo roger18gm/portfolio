@@ -28,9 +28,10 @@ jobs:
 
       - name: Build project
         working-directory: ./portfolioApp
+        run: npm run build
         env:
           NODE_ENV: production
-        run: npm run build
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
