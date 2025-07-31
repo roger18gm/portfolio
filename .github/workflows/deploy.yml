@@ -26,9 +26,16 @@ jobs:
         working-directory: ./portfolioApp
         run: npm ci
 
+      - name: Debug env
+        run: echo "VITE_API_URL=$VITE_API_URL"
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
       - name: Build project
         working-directory: ./portfolioApp
-        run: npm run build
+        run: |
+          export VITE_API_URL=${{ secrets.VITE_API_URL }}
+          npm run build
         env:
           NODE_ENV: production
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
