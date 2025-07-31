@@ -20,7 +20,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         withCredentials: true,
       });
       setIsAuth(true);
-    } catch {
+    } catch (error) {
+      console.error("Authentication check failed:", error);
       setIsAuth(false);
     }
   };

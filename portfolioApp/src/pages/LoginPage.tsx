@@ -48,7 +48,7 @@ const LoginPage = () => {
   return (
     <Box sx={{ margin: { md: "2rem 8rem", lg: "2rem 18rem" } }}>
       <Typography variant="h3" gutterBottom>
-        Login
+        Login Below
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid spacing={3}>
