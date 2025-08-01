@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Card,
   CardActionArea,
@@ -11,6 +14,7 @@ import { useEffect, useState } from "react";
 import { formatDate } from "../helpers";
 import styles from "./home.styles";
 import cardStyles from "../components/card.styles";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 type Certification = {
   _id: string;
@@ -98,6 +102,35 @@ const HomePage = () => {
         </Paper>
       </Box>
 
+      <Box sx={styles.bioSection}>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <Typography component="span">My Background</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <Typography component="span">My Career Objectives</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </AccordionDetails>
+        </Accordion>
+      </Box>
+
       <Box sx={styles.bottomSection}>
         <Box>
           <Typography sx={styles.nameText} variant="h4">
@@ -108,7 +141,6 @@ const HomePage = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              // alignItems: "center",
             }}
           >
             {certifications.map((cert) => (
@@ -151,8 +183,8 @@ const HomePage = () => {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              flexDirection: "row",
+              flexWrap: "wrap",
             }}
           >
             {organizations.map((org) => (

@@ -1,7 +1,14 @@
-import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+} from "@mui/material";
 import YouTubeEmbed from "./YoutubeEmbed";
 import cardStyles from "./card.styles";
 import { formatDate } from "../helpers";
+import { useAuth } from "../context/authContext";
 
 interface Project {
   _id: string;
@@ -20,6 +27,8 @@ interface ProjectCardProps {
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
+  const { isAuth } = useAuth();
+
   return (
     <Card>
       <CardActionArea sx={cardStyles.card}>
@@ -34,13 +43,13 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             {formatDate(project.startDate)} - {formatDate(project.endDate)}
           </Typography>
           <Typography variant="body1" sx={{ mt: 1 }}>
-            {project.details}
+            {`- ${project.details.join("\n")}`}
           </Typography>
           <YouTubeEmbed embedUrl={project.videoUrl} />
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body1" color="textSecondary">
             Stack: {project.stack.join(", ")}
           </Typography>
-          <Typography variant="body2" color="primary">
+          <Typography variant="body1" color="primary">
             <a
               href={project.sourceUrl}
               target="_blank"
@@ -49,6 +58,17 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               View Source Code
             </a>
           </Typography>
+
+          {isAuth && (
+            <Button variant="outlined" sx={{ m: 1 }}>
+              Edit Project
+            </Button>
+          )}
+          {isAuth && (
+            <Button variant="outlined" color="error" sx={{ m: 1 }}>
+              Delete Project
+            </Button>
+          )}
         </CardContent>
       </CardActionArea>
     </Card>

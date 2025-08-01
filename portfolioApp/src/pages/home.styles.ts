@@ -3,17 +3,13 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    mt: 2,
   },
   nameText: {
     fontSize: {
-      xs: "1.25rem", // small screens
-      sm: "1.25rem",
+      xs: "1.5rem", // small screens
       md: "2rem", // medium screens and up
       lg: "2.25rem",
     },
-    // fontWeight: "bold",
-    padding: 1,
   },
   title: {
     fontSize: {
@@ -22,7 +18,6 @@ const styles = {
       md: "1.75rem", // medium screens and up
       lg: "1.75rem",
     },
-    // fontWeight: "bold",
     paddingBottom: "1rem",
   },
   bioSection: {
