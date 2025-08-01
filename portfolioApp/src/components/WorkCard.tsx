@@ -1,42 +1,42 @@
-import { Box, Typography } from "@mui/material";
+import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import cardStyles from "./card.styles";
+import { formatDate } from "../helpers";
 
-interface Experience {
-    title: string;
-    company: string;
-    location: string;
-    details: string;
-    start: string;
-    end: string;
+interface Job {
+  _id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  company: string;
+  details: string;
+  location: string;
 }
 
 interface WorkCardProps {
-    experience: Experience;
+  job: Job;
 }
 
-const WorkCard = ({experience}:WorkCardProps) => {
+const WorkCard = ({ job }: WorkCardProps) => {
   return (
-    <Box
-      sx={{
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        padding: '16px',
-        marginBottom: '16px',
-      }}
-    >
-      <Typography variant="h6" component="div">
-        {experience.title}
-      </Typography>
-      <Typography variant="subtitle1" color="textSecondary">
-        {experience.company} - {experience.location}
-      </Typography>
-      <Typography variant="body2" color="textSecondary">
-        {experience.start} - {experience.end}
-      </Typography>
-      <Typography variant="body1" sx={{ mt: 1 }}>
-        {experience.details}
-      </Typography>
-    </Box>
+    <Card sx={cardStyles.cardBorder}>
+      <CardActionArea sx={cardStyles.card}>
+        <CardContent>
+          <Typography variant="h6" component="div">
+            {job.title}
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {job.company} - {job.location}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            {formatDate(job.startDate)} - {formatDate(job.endDate)}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 1 }}>
+            {job.details}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
   );
-}
+};
 
 export default WorkCard;

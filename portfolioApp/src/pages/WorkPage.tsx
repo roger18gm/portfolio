@@ -1,15 +1,53 @@
-import { Typography } from "@mui/material";
-import WorkList from "../components/WorkList"
+import { Box, CircularProgress, Divider, Typography } from "@mui/material";
+import axios from "axios";
+import WorkCard from "../components/WorkCard";
+import { useEffect, useState } from "react";
+
+type Job = {
+  _id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  company: string;
+  details: string;
+  location: string;
+};
 
 const WorkPage = () => {
-  return (
-    <>
-      <Typography variant="h3">
-        Experience
-      </Typography>
-      <WorkList />
-    </>
-  );
-}
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [isLoading, setLoading] = useState(true);
 
-export default WorkPage
+  useEffect(() => {
+    const getJobs = async () => {
+      try {
+        const response = await axios.get<Job[]>(
+          `${import.meta.env.VITE_API_URL}/jobs`
+        );
+        setJobs(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+    getJobs();
+  }, []);
+
+  return (
+    <Box sx={{ margin: { md: "2rem 8rem", lg: "2rem 18rem" } }}>
+      <Typography variant="h4">My Professional Experience</Typography>
+      <Divider sx={{ margin: "1rem 0" }} />
+      <Typography variant="body1" sx={{ marginBottom: "1rem" }}>
+        Here are some of the job experiences I've had over the years.
+      </Typography>
+      {isLoading && <CircularProgress size="3rem" />}
+      {!isLoading && jobs.length === 0 && (
+        <Typography variant="body1">No job experiences found.</Typography>
+      )}
+      {jobs.map((job) => (
+        <WorkCard key={job._id} job={job} />
+      ))}
+    </Box>
+  );
+};
+
+export default WorkPage;

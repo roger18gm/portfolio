@@ -4,7 +4,6 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-// import './App.css';
 import HomePage from "./pages/HomePage";
 import WorkPage from "./pages/WorkPage";
 import ProjectsPage from "./pages/ProjectsPage";
@@ -15,6 +14,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import axios from "axios";
 import { AuthProvider } from "./context/authContext";
+import styles from "./app.styles";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuth, setIsAuth] = useState<boolean | null>(null);
@@ -73,7 +73,7 @@ const router = createBrowserRouter(routes);
 function App() {
   return (
     <AuthProvider>
-      <Box sx={{ margin: "0px 20px" }}>
+      <Box sx={styles.appMargin}>
         <RouterProvider router={router} />
       </Box>
     </AuthProvider>
