@@ -1,14 +1,13 @@
 import { Box } from "@mui/material";
 
 interface YouTubeEmbedProps {
-    embedUrl: string;
-  }
-  
-const YouTubeEmbed = ({ embedUrl }: YouTubeEmbedProps) => {
+  embedUrl: string;
+}
 
-    if (embedUrl === "") {
-        return
-    }
+const YouTubeEmbed = ({ embedUrl }: YouTubeEmbedProps) => {
+  if (embedUrl === "") {
+    return;
+  }
   return (
     <Box
       sx={{
@@ -16,6 +15,7 @@ const YouTubeEmbed = ({ embedUrl }: YouTubeEmbedProps) => {
         paddingTop: "56.25%", // 16:9 aspect ratio
         height: 0,
         overflow: "hidden",
+        my: "1rem",
       }}
     >
       <iframe
@@ -34,6 +34,6 @@ const YouTubeEmbed = ({ embedUrl }: YouTubeEmbedProps) => {
       ></iframe>
     </Box>
   );
-}
+};
 
 export default YouTubeEmbed;

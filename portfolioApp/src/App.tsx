@@ -15,6 +15,7 @@ import AdminPage from "./pages/AdminPage";
 import axios from "axios";
 import { AuthProvider } from "./context/authContext";
 import styles from "./app.styles";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuth, setIsAuth] = useState<boolean | null>(null);
@@ -36,26 +37,11 @@ const routes = [
     path: "/",
     element: <Layout />,
     children: [
-      {
-        path: "/",
-        element: <HomePage />,
-      },
-      {
-        path: "work",
-        element: <WorkPage />,
-      },
-      {
-        path: "projects",
-        element: <ProjectsPage />,
-      },
-      {
-        path: "contact",
-        element: <ContactPage />,
-      },
-      {
-        path: "login",
-        element: <LoginPage />,
-      },
+      { path: "/", element: <HomePage /> },
+      { path: "work", element: <WorkPage /> },
+      { path: "projects", element: <ProjectsPage /> },
+      { path: "contact", element: <ContactPage /> },
+      { path: "login", element: <LoginPage /> },
       {
         path: "admin",
         element: (
@@ -64,6 +50,7 @@ const routes = [
           </ProtectedRoute>
         ),
       },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ];

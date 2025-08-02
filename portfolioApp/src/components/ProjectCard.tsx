@@ -43,13 +43,13 @@ const ProjectCard = ({ project, onDelete, onUpdate }: ProjectCardProps) => {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   return (
-    <Card>
+    <Card sx={{ marginBottom: "2rem" }}>
       <CardActionArea sx={cardStyles.card}>
         <CardContent sx={{ height: "100%" }}>
           <Typography variant="h5" component="div">
             {project.name}
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="subtitle1" color="textSecondary">
             {project.type} Project
           </Typography>
           <Typography variant="body2" color="textSecondary">
@@ -58,7 +58,7 @@ const ProjectCard = ({ project, onDelete, onUpdate }: ProjectCardProps) => {
           <Typography variant="body1" sx={{ mt: 1 }}>
             {project.details.map((detail, index) => (
               <span key={index}>
-                {`- ${detail}`}
+                {`+ ${detail}`}
                 {index < project.details.length - 1 && <br />}
               </span>
             ))}
