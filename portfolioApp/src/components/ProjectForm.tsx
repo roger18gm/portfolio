@@ -15,25 +15,48 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import axios from "axios";
+import { Project } from "../pages/ProjectsPage";
+
+// interface Project {
+//   _id?: string;
+//   name: string;
+//   type: string;
+//   videoUrl: string;
+//   sourceUrl: string;
+//   details: string[];
+//   stack: string[];
+//   startDate?: string;
+//   endDate?: string;
+// }
+
+interface ProjectFormProps {
+  open: boolean;
+  onClose: () => void;
+  onUpdate?: (project: Project) => void;
+  project?: Project; // <-- optional for editing
+}
 
 const ProjectForm = ({
   open,
   onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) => {
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [sourceUrl, setSourceUrl] = useState("");
-  const [techStack, setTechStack] = useState<string[]>([]);
-  const [details, setDetails] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  onUpdate,
+  project,
+}: ProjectFormProps) => {
+  const [name, setName] = useState(project?.name || "");
+  const [type, setType] = useState(project?.type || "");
+  const [videoUrl, setVideoUrl] = useState(project?.videoUrl || "");
+  const [sourceUrl, setSourceUrl] = useState(project?.sourceUrl || "");
+  const [techStack, setTechStack] = useState<string[]>(project?.stack || [""]);
+  const [details, setDetails] = useState<string[]>(project?.details || [""]);
+  const [startDate, setStartDate] = useState<Dayjs | null>(
+    project?.startDate ? dayjs(project.startDate) : null
+  );
+  const [endDate, setEndDate] = useState<Dayjs | null>(
+    project?.endDate ? dayjs(project.endDate) : null
+  );
 
   const handleTechStackChange = (idx: number, value: string) => {
     setTechStack((ts) => ts.map((item, i) => (i === idx ? value : item)));
@@ -63,10 +86,24 @@ const ProjectForm = ({
         details: details.filter(Boolean),
         stack: techStack.filter(Boolean),
       };
-
-      await axios.post(`${import.meta.env.VITE_API_URL}/projects`, formData, {
-        withCredentials: true,
-      });
+      if (project?._id) {
+        // Update existing project
+        const updatedProject = await axios.put<{
+          message: string;
+          project: Project;
+        }>(
+          `${import.meta.env.VITE_API_URL}/projects/${project._id}`,
+          formData,
+          { withCredentials: true }
+        );
+        console.log("Project updated:", updatedProject.data);
+        onUpdate ? onUpdate(updatedProject.data.project) : null; // <-- update parent state
+      } else {
+        // Create new project
+        await axios.post(`${import.meta.env.VITE_API_URL}/projects`, formData, {
+          withCredentials: true,
+        });
+      }
 
       console.log("Form Data Submitted:", formData);
     } catch (error) {
@@ -80,7 +117,9 @@ const ProjectForm = ({
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog open={open} onClose={onClose}>
         <form onSubmit={handleSubmit}>
-          <DialogTitle sx={{ m: 0, p: 2 }}>Add Project</DialogTitle>
+          <DialogTitle sx={{ m: 0, p: 2 }}>
+            {project ? "Edit Project" : "Add Project"}
+          </DialogTitle>
           <DialogContent dividers>
             <Grid container spacing={2}>
               <Grid size={6}>

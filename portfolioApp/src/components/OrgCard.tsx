@@ -9,56 +9,35 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { Organization } from "../pages/HomePage";
 import cardStyles from "./card.styles";
 import { formatDate } from "../helpers";
-import { Job } from "../pages/WorkPage";
 import { useAuth } from "../context/authContext";
 import { useState } from "react";
-import WorkForm from "./WorkForm";
-import axios from "axios";
+import OrgForm from "./OrgForm";
 
-// interface Job {
-//   _id: string;
-//   title: string;
-//   startDate: string;
-//   endDate: string;
-//   company: string;
-//   details: string;
-//   location: string;
-// }
-
-interface WorkCardProps {
-  job: Job;
+interface OrgCardProps {
+  org: Organization;
   onDelete: (id: string) => void;
-  onUpdate: (job: Job) => void;
+  onUpdate: (org: Organization) => void;
 }
 
-const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
+const OrgCard = ({ org, onDelete, onUpdate }: OrgCardProps) => {
   const { isAuth } = useAuth();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-
   return (
-    <Card sx={cardStyles.cardBorder}>
+    <Card key={org._id} sx={cardStyles.cardBorder}>
       <CardActionArea sx={cardStyles.card}>
         <CardContent>
-          <Typography variant="h6" component="div">
-            {job.title}
+          <Typography variant="h6">{org.name}</Typography>
+          <Typography variant="body1">
+            Joined: {formatDate(org.joinDate)}
+            {org.leaveDate && `, Left: ${formatDate(org.leaveDate)}`}
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            {job.company} - {job.location}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {formatDate(job.startDate)} - {formatDate(job.endDate)}
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 1 }}>
-            {job.details.map((detail, index) => (
-              <span key={index}>
-                {`- ${detail}`}
-                {index < job.details.length - 1 && <br />}
-              </span>
-            ))}
-          </Typography>
+          <Typography variant="body1">Type: {org.type}</Typography>
+          <Typography variant="body1">Position: {org.position}</Typography>
+          <Typography variant="body1">{org.details}</Typography>
           {isAuth && (
             <>
               <Button
@@ -66,13 +45,13 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
                 sx={{ m: 1 }}
                 onClick={() => setEditOpen(true)}
               >
-                Edit Job
+                Edit Org
               </Button>
-              <WorkForm
+              <OrgForm
                 open={editOpen}
                 onClose={() => setEditOpen(false)}
                 onUpdate={onUpdate}
-                job={job}
+                org={org}
               />
             </>
           )}
@@ -83,15 +62,15 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
               sx={{ m: 1 }}
               onClick={() => setDeleteOpen(true)}
             >
-              Delete Job
+              Delete Org
             </Button>
           )}
 
           <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-            <DialogTitle>Delete Job</DialogTitle>
+            <DialogTitle>Delete Org</DialogTitle>
             <DialogContent>
               <Typography variant="body1">
-                Are you sure you want to delete this job?
+                Are you sure you want to delete this org?
               </Typography>
             </DialogContent>
             <DialogActions>
@@ -102,13 +81,15 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
                 onClick={async () => {
                   try {
                     await axios.delete(
-                      `${import.meta.env.VITE_API_URL}/jobs/${job._id}`,
+                      `${import.meta.env.VITE_API_URL}/organizations/${
+                        org._id
+                      }`,
                       { withCredentials: true }
                     );
                     setDeleteOpen(false);
-                    onDelete(job._id); // <-- update parent state
+                    onDelete(org._id); // <-- update parent state
                   } catch (error) {
-                    console.error("Error deleting project:", error);
+                    console.error("Error deleting org:", error);
                   }
                 }}
                 color="secondary"
@@ -123,4 +104,4 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
   );
 };
 
-export default WorkCard;
+export default OrgCard;

@@ -9,56 +9,53 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { Certification } from "../pages/HomePage";
 import cardStyles from "./card.styles";
 import { formatDate } from "../helpers";
-import { Job } from "../pages/WorkPage";
 import { useAuth } from "../context/authContext";
 import { useState } from "react";
-import WorkForm from "./WorkForm";
+import CertForm from "./CertForm";
 import axios from "axios";
 
-// interface Job {
-//   _id: string;
-//   title: string;
-//   startDate: string;
-//   endDate: string;
-//   company: string;
-//   details: string;
-//   location: string;
-// }
-
-interface WorkCardProps {
-  job: Job;
+interface CertCardProps {
+  cert: Certification;
   onDelete: (id: string) => void;
-  onUpdate: (job: Job) => void;
+  onUpdate: (cert: Certification) => void;
 }
 
-const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
+const CertCard = ({ cert, onDelete, onUpdate }: CertCardProps) => {
   const { isAuth } = useAuth();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   return (
-    <Card sx={cardStyles.cardBorder}>
+    <Card key={cert._id} sx={cardStyles.cardBorder}>
       <CardActionArea sx={cardStyles.card}>
         <CardContent>
-          <Typography variant="h6" component="div">
-            {job.title}
+          <Typography variant="h6">{cert.name}</Typography>
+          <Typography variant="body1">
+            Issued by: {cert.issuingOrganization} on{" "}
+            {formatDate(cert.issueDate)}
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            {job.company} - {job.location}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {formatDate(job.startDate)} - {formatDate(job.endDate)}
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 1 }}>
-            {job.details.map((detail, index) => (
-              <span key={index}>
-                {`- ${detail}`}
-                {index < job.details.length - 1 && <br />}
-              </span>
-            ))}
-          </Typography>
+          {cert.expireDate && (
+            <Typography variant="body1">
+              Expires on: {formatDate(cert.expireDate)}
+            </Typography>
+          )}
+          {cert.verificationUrl && (
+            <Typography variant="body1">
+              Verification URL:{" "}
+              <a
+                href={cert.verificationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {cert.verificationUrl}
+              </a>
+            </Typography>
+          )}
+          <Typography variant="body1">{cert.details}</Typography>
+
           {isAuth && (
             <>
               <Button
@@ -66,13 +63,13 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
                 sx={{ m: 1 }}
                 onClick={() => setEditOpen(true)}
               >
-                Edit Job
+                Edit Certification
               </Button>
-              <WorkForm
+              <CertForm
                 open={editOpen}
                 onClose={() => setEditOpen(false)}
                 onUpdate={onUpdate}
-                job={job}
+                cert={cert}
               />
             </>
           )}
@@ -83,15 +80,15 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
               sx={{ m: 1 }}
               onClick={() => setDeleteOpen(true)}
             >
-              Delete Job
+              Delete Certification
             </Button>
           )}
 
           <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-            <DialogTitle>Delete Job</DialogTitle>
+            <DialogTitle>Delete Certification</DialogTitle>
             <DialogContent>
               <Typography variant="body1">
-                Are you sure you want to delete this job?
+                Are you sure you want to delete this certification?
               </Typography>
             </DialogContent>
             <DialogActions>
@@ -102,13 +99,15 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
                 onClick={async () => {
                   try {
                     await axios.delete(
-                      `${import.meta.env.VITE_API_URL}/jobs/${job._id}`,
+                      `${import.meta.env.VITE_API_URL}/certifications/${
+                        cert._id
+                      }`,
                       { withCredentials: true }
                     );
                     setDeleteOpen(false);
-                    onDelete(job._id); // <-- update parent state
+                    onDelete(cert._id); // <-- update parent state
                   } catch (error) {
-                    console.error("Error deleting project:", error);
+                    console.error("Error deleting cert:", error);
                   }
                 }}
                 color="secondary"
@@ -123,4 +122,4 @@ const WorkCard = ({ job, onDelete, onUpdate }: WorkCardProps) => {
   );
 };
 
-export default WorkCard;
+export default CertCard;

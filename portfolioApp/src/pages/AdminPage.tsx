@@ -1,9 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import ProjectForm from "../components/ProjectForm";
-import JobForm from "../components/JobForm";
-import CertificationForm from "../components/CertificationForm";
-import OrganizationForm from "../components/OrganizationForm";
+import WorkForm from "../components/WorkForm";
+import CertForm from "../components/CertForm";
+import OrgForm from "../components/OrgForm";
 
 type ModalType = "project" | "job" | "certification" | "organization" | null;
 
@@ -53,12 +53,12 @@ const AdminPage = () => {
       {openModal === "project" && (
         <ProjectForm open={true} onClose={handleClose} />
       )}
-      {openModal === "job" && <JobForm open={true} onClose={handleClose} />}
+      {openModal === "job" && <WorkForm open={true} onClose={handleClose} />}
       {openModal === "certification" && (
-        <CertificationForm open={true} onClose={handleClose} />
+        <CertForm open={true} onClose={handleClose} />
       )}
       {openModal === "organization" && (
-        <OrganizationForm open={true} onClose={handleClose} />
+        <OrgForm open={true} onClose={handleClose} />
       )}
     </Box>
   );

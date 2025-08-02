@@ -5,6 +5,7 @@ import {
   FormLabel,
   Grid,
   OutlinedInput,
+  Snackbar,
   styled,
   Typography,
 } from "@mui/material";
@@ -22,12 +23,18 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const { checkAuth } = useAuth();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
+    open: false,
+    message: "",
+  });
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true);
       const response = await axios.post(
         `${apiUrl}/auth/login`,
         {
@@ -39,10 +46,17 @@ const LoginPage = () => {
         }
       );
       console.log("Login successful:", response.data);
+      setSnackbar({ open: true, message: "Login successful!" }); // <-- set snackbar state
       await checkAuth();
       navigate("/admin");
     } catch (err) {
       console.error("Login failed:", err);
+      setSnackbar({
+        open: true,
+        message: "Login failed. Please check your credentials.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
@@ -91,12 +105,19 @@ const LoginPage = () => {
               size="large"
               endIcon={<SendIcon />}
               fullWidth
+              loading={isSubmitting}
             >
               Login
             </Button>
           </Box>
         </Grid>
       </form>
+      <Snackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

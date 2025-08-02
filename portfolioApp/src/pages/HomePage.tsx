@@ -3,20 +3,18 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Card,
-  CardActionArea,
-  CardContent,
   Divider,
   Paper,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { formatDate } from "../helpers";
 import styles from "./home.styles";
-import cardStyles from "../components/card.styles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CertCard from "../components/CertCard";
+import OrgCard from "../components/OrgCard";
+import SkeletonCard from "../components/SkeletonCard";
 
-type Certification = {
+export interface Certification {
   _id: string;
   name: string;
   issuingOrganization: string;
@@ -24,9 +22,9 @@ type Certification = {
   expireDate?: string;
   verificationUrl?: string;
   details: string;
-};
+}
 
-type Organization = {
+export interface Organization {
   _id: string;
   name: string;
   joinDate: string;
@@ -34,11 +32,13 @@ type Organization = {
   type: string;
   position: string;
   details: string;
-};
+}
 
 const HomePage = () => {
-  const [certifications, setCertifications] = useState<Certification[]>([]);
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [certs, setCerts] = useState<Certification[]>([]);
+  const [orgs, setOrgs] = useState<Organization[]>([]);
+  const [loadingCerts, setLoadingCerts] = useState(true);
+  const [loadingOrgs, setLoadingOrgs] = useState(true);
 
   useEffect(() => {
     const fetchCertifications = async () => {
@@ -47,9 +47,11 @@ const HomePage = () => {
           `${import.meta.env.VITE_API_URL}/certifications`
         );
         const data = await response.json();
-        setCertifications(data);
+        setCerts(data);
       } catch (error) {
         console.error("Error fetching certifications:", error);
+      } finally {
+        setLoadingCerts(false);
       }
     };
 
@@ -59,15 +61,38 @@ const HomePage = () => {
           `${import.meta.env.VITE_API_URL}/organizations`
         );
         const data = await response.json();
-        setOrganizations(data);
+        setOrgs(data);
       } catch (error) {
         console.error("Error fetching organizations:", error);
+      } finally {
+        setLoadingOrgs(false);
       }
     };
 
     fetchCertifications();
     fetchOrganizations();
   }, []);
+
+  // Handler for removing a cert from the list
+  const handleDeleteCert = (id: string) => {
+    setCerts((prev) => prev.filter((cert) => cert._id !== id));
+  };
+
+  // Handler for updating a cert in the list
+  const handleUpdateCert = (updatedCert: Certification) => {
+    setCerts((prev) =>
+      prev.map((cert) => (cert._id === updatedCert._id ? updatedCert : cert))
+    );
+  };
+
+  const handleDeleteOrg = (id: string) => {
+    setOrgs((prev) => prev.filter((org) => org._id !== id));
+  };
+  const handleUpdateOrg = (updatedOrg: Organization) => {
+    setOrgs((prev) =>
+      prev.map((org) => (org._id === updatedOrg._id ? updatedOrg : org))
+    );
+  };
 
   return (
     <Box>
@@ -76,44 +101,54 @@ const HomePage = () => {
         <Typography sx={styles.title}>Software Engineer</Typography>
         <img
           style={{ maxWidth: "300px" }}
-          src="/images/roger.galan.headshot.jpg"
+          src="/images/roger.galan.headshot-min.jpg"
           alt="picture of Roger Galan"
         />
         <Paper elevation={10} sx={styles.bioSection}>
           <Typography sx={styles.bioText} variant="body1">
-            Thank you for visiting my virtual portfolio! Below you can learn
-            about who I am, view my certification(s), and organizations that I
-            am involved with. You can also navigate between my entire work
-            history, projects that I've created/worked on with visual
-            demonstrations, and fill out a form to get in contact with me via
-            email. For each project, there will be a link to the source Github
-            repository.
+            I'm a software engineering student driven by the challenge of
+            translating complex ideas into elegant and user-centric
+            applications. My goal is to leverage technology to create solutions
+            that are both powerful and accessible to everyone.
           </Typography>
           <Typography sx={styles.bioText} variant="body1">
-            I'm currently studying at Brigham Young University-Idaho, majoring
-            in Software Engineering, with emphases in Software Design, Full
-            Stack Development, and Cloud Development. As I continue my Junior
-            year, I've had various opportunities to work with my peers and
-            develop complex and real-world applications through coursework and
-            extracurricular activities. My drive comes from learning, diving
-            into the unknown, challenging myself, and a strong focus to bring
-            technical solutions to the common person.
+            As a junior at BYU-Idaho with emphases in Software Design, Full
+            Stack, and Cloud Development, I've honed my skills by building
+            robust applications in collaborative, fast-paced environments. From
+            designing the user interface with <b>Figma</b> and <b>React</b> to
+            deploying the back-end on <b>AWS</b> or <b>GCP</b>, I enjoy every
+            stage of the development lifecycle.
+          </Typography>
+          <Typography sx={styles.bioText} variant="body1">
+            This portfolio is a collection of my work. I invite you to explore
+            my projects to see my passion for clean code and problem-solving in
+            action. You can find detailed demonstrations of my work in the
+            projects section, my full experience on my resume, and my code on
+            GitHub.
           </Typography>
         </Paper>
       </Box>
 
-      <Box sx={styles.bioSection}>
+      <Box sx={styles.accordionSection}>
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1-content"
             id="panel1-header"
           >
-            <Typography component="span">My Background</Typography>
+            <Typography variant="h4" component="span">
+              Background
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
+            <Typography variant="body1">
+              In my youth, I was captivated by the world of technology, often
+              wondering how my family computer and PlayStation console worked.
+              This curiosity led me to explore programming, starting with HTML
+              and CSS in high school. I quickly fell in love with the process of
+              creating something from nothing, and I knew I wanted to pursue a
+              career in software development.
+            </Typography>
           </AccordionDetails>
         </Accordion>
         <Accordion>
@@ -122,20 +157,27 @@ const HomePage = () => {
             aria-controls="panel2-content"
             id="panel2-header"
           >
-            <Typography component="span">My Career Objectives</Typography>
+            <Typography variant="h4" component="span">
+              Career Goals
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
+            <Typography variant="body1">
+              My career objective is to become a proficient software engineer
+              who can design and implement innovative solutions that enhance
+              user experiences and drive business success. I aim to work in a
+              dynamic environment where I can continue to learn, grow, and
+              contribute to impactful projects. I want to do more than just
+              write code, I want to be part of a team that creates products that
+              make a difference in people's lives.
+            </Typography>
           </AccordionDetails>
         </Accordion>
       </Box>
 
       <Box sx={styles.bottomSection}>
-        <Box>
-          <Typography sx={styles.nameText} variant="h4">
-            Certifications
-          </Typography>
+        <Box sx={{ marginBottom: "2rem" }}>
+          <Typography variant="h4">Certifications</Typography>
           <Divider sx={{ margin: "1rem 0" }} />
           <Box
             sx={{
@@ -143,37 +185,18 @@ const HomePage = () => {
               flexDirection: "column",
             }}
           >
-            {certifications.map((cert) => (
-              <Card key={cert._id} sx={cardStyles.cardBorder}>
-                <CardActionArea sx={cardStyles.card}>
-                  <CardContent>
-                    <Typography variant="h6">{cert.name}</Typography>
-                    <Typography variant="body1">
-                      Issued by: {cert.issuingOrganization} on{" "}
-                      {formatDate(cert.issueDate)}
-                    </Typography>
-                    {cert.expireDate && (
-                      <Typography variant="body1">
-                        Expires on: {formatDate(cert.expireDate)}
-                      </Typography>
-                    )}
-                    {cert.verificationUrl && (
-                      <Typography variant="body1">
-                        Verification URL:{" "}
-                        <a
-                          href={cert.verificationUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {cert.verificationUrl}
-                        </a>
-                      </Typography>
-                    )}
-                    <Typography variant="body1">{cert.details}</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
+            {loadingCerts
+              ? Array.from({ length: 2 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))
+              : certs.map((cert) => (
+                  <CertCard
+                    key={cert._id}
+                    cert={cert}
+                    onDelete={handleDeleteCert}
+                    onUpdate={handleUpdateCert}
+                  />
+                ))}
           </Box>
         </Box>
 
@@ -183,28 +206,21 @@ const HomePage = () => {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
+              flexDirection: "column",
             }}
           >
-            {organizations.map((org) => (
-              <Card key={org._id} sx={cardStyles.cardBorder}>
-                <CardActionArea sx={cardStyles.card}>
-                  <CardContent>
-                    <Typography variant="h6">{org.name}</Typography>
-                    <Typography variant="body1">
-                      Joined: {formatDate(org.joinDate)}
-                      {org.leaveDate && `, Left: ${formatDate(org.leaveDate)}`}
-                    </Typography>
-                    <Typography variant="body1">Type: {org.type}</Typography>
-                    <Typography variant="body1">
-                      Position: {org.position}
-                    </Typography>
-                    <Typography variant="body1">{org.details}</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
+            {loadingOrgs
+              ? Array.from({ length: 2 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))
+              : orgs.map((org) => (
+                  <OrgCard
+                    key={org._id}
+                    org={org}
+                    onDelete={handleDeleteOrg}
+                    onUpdate={handleUpdateOrg}
+                  />
+                ))}
           </Box>
         </Box>
       </Box>

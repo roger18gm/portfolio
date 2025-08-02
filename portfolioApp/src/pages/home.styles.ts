@@ -28,6 +28,12 @@ const styles = {
       md: 15,
     },
   },
+  accordionSection: {
+    mb: 5,
+    mx: {
+      md: 15,
+    },
+  },
   bioText: {
     fontSize: {
       xs: "1rem", // small screens

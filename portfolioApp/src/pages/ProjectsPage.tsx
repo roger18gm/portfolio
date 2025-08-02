@@ -1,9 +1,10 @@
-import { Box, CircularProgress, Divider, Typography } from "@mui/material";
+import { Box, Divider, Typography } from "@mui/material";
 import ProjectCard from "../components/ProjectCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import SkeletonCard from "../components/SkeletonCard";
 
-type Project = {
+export interface Project {
   _id: string;
   name: string;
   startDate: string;
@@ -13,7 +14,7 @@ type Project = {
   type: string;
   details: string[];
   stack: string[];
-};
+}
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -34,6 +35,20 @@ const ProjectsPage = () => {
     getProjects();
   }, []);
 
+  // Handler for removing a project from the list
+  const handleDelete = (id: string) => {
+    setProjects((prev) => prev.filter((project) => project._id !== id));
+  };
+
+  // Handler for updating a project in the list
+  const handleUpdate = (updatedProject: Project) => {
+    setProjects((prev) =>
+      prev.map((project) =>
+        project._id === updatedProject._id ? updatedProject : project
+      )
+    );
+  };
+
   return (
     <Box sx={{ margin: { md: "2rem 8rem", lg: "2rem 18rem" } }}>
       <Typography variant="h4">Project Contributions</Typography>
@@ -42,7 +57,6 @@ const ProjectsPage = () => {
       <Typography variant="body1" sx={{ marginBottom: "1rem" }}>
         Here are some of the projects I've contributed to over the years.
       </Typography>
-      {isLoading && <CircularProgress size="3rem" />}
       {!isLoading && projects.length === 0 && (
         <Typography variant="body1">No projects found.</Typography>
       )}
@@ -52,9 +66,16 @@ const ProjectsPage = () => {
           gap: 2,
         }}
       >
-        {projects.map((project) => (
-          <ProjectCard key={project._id} project={project} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 2 }).map((_, i) => <SkeletonCard key={i} />)
+          : projects.map((project) => (
+              <ProjectCard
+                key={project._id}
+                project={project}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
+            ))}
       </Box>
     </Box>
   );
