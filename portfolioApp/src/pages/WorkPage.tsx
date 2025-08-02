@@ -57,14 +57,20 @@ const WorkPage = () => {
       )}
       {isLoading
         ? Array.from({ length: 2 }).map((_, i) => <SkeletonCard key={i} />)
-        : jobs.map((job) => (
-            <WorkCard
-              key={job._id}
-              job={job}
-              onDelete={handleDelete}
-              onUpdate={handleUpdate}
-            />
-          ))}
+        : [...jobs]
+            .sort(
+              (a, b) =>
+                new Date(b.startDate).getTime() -
+                new Date(a.startDate).getTime()
+            )
+            .map((job) => (
+              <WorkCard
+                key={job._id}
+                job={job}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
+            ))}
     </Box>
   );
 };

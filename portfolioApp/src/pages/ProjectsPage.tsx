@@ -68,14 +68,20 @@ const ProjectsPage = () => {
       >
         {isLoading
           ? Array.from({ length: 2 }).map((_, i) => <SkeletonCard key={i} />)
-          : projects.map((project) => (
-              <ProjectCard
-                key={project._id}
-                project={project}
-                onDelete={handleDelete}
-                onUpdate={handleUpdate}
-              />
-            ))}
+          : [...projects]
+              .sort(
+                (a, b) =>
+                  new Date(b.startDate).getTime() -
+                  new Date(a.startDate).getTime()
+              )
+              .map((project) => (
+                <ProjectCard
+                  key={project._id}
+                  project={project}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                />
+              ))}
       </Box>
     </Box>
   );
